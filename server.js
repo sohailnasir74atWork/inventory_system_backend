@@ -3,6 +3,8 @@ const express = require("express")
 const cors = require("cors")
 const dotenv = require("dotenv").config()
 const bodyParser = require("body-parser")
+const userRoute = require("./routes/userRoute")
+const errorHnadler = require("./controllers/errorHandler/errorHandler")
 //////////////////////////////////////////EXPRESS RUNNING////////////////////////////////////////////
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -10,7 +12,10 @@ const PORT = process.env.PORT || 5000
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
 app.use(bodyParser.json())
-///////////////////////////////////////////////SERVER CONNECTION///////////////////////////////////////
+/////////////////////////////////////Middle Router//////////////////////////////////////////////
+app.use("/api/users", userRoute)
+///////////////////////////////////////////////SERVER CONNECTION////////////////////////////////
+app.use(errorHnadler)
 app.get("/", (req, res)=>{
     res.send("I am looking forward to see this")
 })
