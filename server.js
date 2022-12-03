@@ -5,13 +5,18 @@ const dotenv = require("dotenv").config()
 const bodyParser = require("body-parser")
 const userRoute = require("./routes/userRoute")
 const errorHnadler = require("./controllers/errorHandler/errorHandler")
+const cookieParser = require("cookie-parser")
 //////////////////////////////////////////EXPRESS RUNNING////////////////////////////////////////////
 const app = express()
+
 const PORT = process.env.PORT || 5000
 ///////////////////////////////////////MIDDLEWARE/////////////////////////////////////////////
 app.use(express.json())
+app.use(cookieParser())
 app.use(express.urlencoded({extended:false}))
+
 app.use(bodyParser.json())
+
 /////////////////////////////////////Middle Router//////////////////////////////////////////////
 app.use("/api/users", userRoute)
 ///////////////////////////////////////////////SERVER CONNECTION////////////////////////////////
