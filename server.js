@@ -4,7 +4,7 @@ const cors = require("cors")
 const dotenv = require("dotenv").config()
 const bodyParser = require("body-parser")
 const userRoute = require("./routes/userRoute")
-const errorHnadler = require("./controllers/errorHandler/errorHandler")
+const errorHnadler = require("./middleware/errorHandler")
 const cookieParser = require("cookie-parser")
 //////////////////////////////////////////EXPRESS RUNNING////////////////////////////////////////////
 const app = express()

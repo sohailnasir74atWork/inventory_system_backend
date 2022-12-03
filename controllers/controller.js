@@ -2,8 +2,9 @@ const asyncHanhler = require("express-async-handler");
 // const dotenv = require("dotenv").config()
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
-const { validate } = require("../models/userModel");
-const bcrypt = require("bcryptjs")
+
+const bcrypt = require("bcryptjs");
+const errorHnadler = require("../middleware/errorHandler");
 
 const genToken = (id)=>{
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: "1d"})
@@ -41,7 +42,7 @@ const registerUser= asyncHanhler( async (req, res)=>{
         httpOnly: true,
         expires: new Date(Date.now() + 1000 * 86400), // 1 day
         sameSite: "none",
-        secure: true,
+        // secure: true,
       });
       
     //////////////////////////////////////////////////////////
@@ -73,7 +74,7 @@ const loginUser = asyncHanhler(async (req, res)=>{
         httpOnly: true,
         expires: new Date(Date.now() + 1000 * 86400), // 1 day
         sameSite: "none",
-        secure: true,
+        // secure: true,
       });
       
 
@@ -110,9 +111,57 @@ const logOut = asyncHanhler(async(req, res)=>{
         secure: true,
       });
       return res.status(200).json({message:"Successfully loged out"})
-      
+    })
+    const getUser = asyncHanhler(async(req, res)=>{
+        const user = await User.findById(req.user._id)
+        if(!user){
+        res.status(400)
+        throw new Error ("User is not available")
+        }
 
+        const {_id, name, email,bio, phone, photo,} = user
+        res.status(200).json({
+            _id,
+            name,
+            email,
+            bio,
+            photo,
+            phone,
 
+        })
+    })
+const statusLogin = asyncHanhler(async(req, res)=>{
+        const token = req.cookies.token
+        if(!token){res.json(false)}
+        const verify = jwt.verify(token, process.env.JWT_SECRET)
+        if(!token){res.json(false)}
+        if(verify) res.json(true)
 })
-
-module.exports = {registerUser, loginUser, logOut}
+const updateUser = asyncHanhler(async(req, res)=>{
+    const user = await User.findById(req.user._id)
+    console.log(user);
+    if(!user){
+        res.status(400)
+        throw new Error ("User is not available")
+    }
+    if(user){
+    const {name, email, bio, phone, photo, _id} = user
+    user.email = email
+    user.name = req.body.name || name
+    user.bio = req.body.bio || bio
+    user.phone = req.body.phone || phone
+    user.photo = req.body.photo || photo
+    const updated = await user.save()
+    res.status(200).json({
+        _id:updated._id,
+        name:updated.name,
+        bio:updated.bio,
+        photo:updated.photo,
+        phone:updated.phone,
+        email:updated.email
+    })} else{
+        res.status(400)
+        throw new Error ("User is not available")
+    }
+})
+module.exports = {registerUser, loginUser, logOut, getUser, statusLogin, updateUser}
