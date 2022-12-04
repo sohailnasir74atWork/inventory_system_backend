@@ -139,7 +139,6 @@ const statusLogin = asyncHanhler(async(req, res)=>{
 })
 const updateUser = asyncHanhler(async(req, res)=>{
     const user = await User.findById(req.user._id)
-    console.log(user);
     if(!user){
         res.status(400)
         throw new Error ("User is not available")
@@ -164,4 +163,29 @@ const updateUser = asyncHanhler(async(req, res)=>{
         throw new Error ("User is not available")
     }
 })
-module.exports = {registerUser, loginUser, logOut, getUser, statusLogin, updateUser}
+const changedPassword = asyncHanhler(async(req, res)=>{
+    const user = await User.findById(req.user._id)
+    const {oldPassword, password} = req.body
+    if(!oldPassword || !password) {
+        res.status(400)
+        throw new Error ("Please enter new and old passwords")
+    }
+    const oldpasswordIsCorrect = await bcrypt.compare(oldPassword, user.password)
+    if(!oldpasswordIsCorrect){
+        res.status(400)
+        throw new Error ("Old password is not correct")  
+    }
+    if (user && oldpasswordIsCorrect){
+        user.password = password
+        await user.save()
+        res.status(200).json("Password is successfully changed")
+    }
+    else{
+        res.status(400)
+        throw new Error ("Invalid request")
+    }
+})
+const forgetPassword = asyncHanhler(async(req, res)=>{
+    res.json("forgotpassword")
+})
+module.exports = {registerUser, loginUser, logOut, getUser, statusLogin, updateUser, changedPassword, forgetPassword}

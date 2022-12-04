@@ -3,8 +3,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const protect = asyncHanhler(async (req, res, next)=>{
     const token = req.cookies.token
-    console.log(token);
-    if(!token){
+        if(!token){
         res.status(400)
         throw new Error ("Not authorized, please login")
     }

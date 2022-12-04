@@ -34,6 +34,9 @@ const userSchema = mongoose.Schema({
         reurired: [true, "Please insert photo"],
         default: "https://i.ibb.co/4pDNDk1/avatar.png"
     }
+},
+{
+    timestamps: true
 })
 userSchema.pre("save", async function(){
 
@@ -49,7 +52,8 @@ userSchema.pre("save", async function (next) {
     const hashedPassword = await bcrypt.hash(this.password, salt);
     this.password = hashedPassword;
     next();
-  });
+  },
+ );
 /////////////////////////////////////////////////////////
 const User = mongoose.model("user", userSchema )
 
