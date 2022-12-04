@@ -6,7 +6,6 @@ const crypto = require("crypto")
 
 const bcrypt = require("bcryptjs");
 const errorHnadler = require("../middleware/errorHandler");
-const { now } = require("mongoose");
 const sendEmail = require("../models/uTILS/sendMail");
 const Token = require("../models/tokenModel");
 
@@ -200,6 +199,7 @@ const forgetPassword = asyncHanhler(async(req, res)=>{
         let tokenAvailabe = await Token.findOne({userid:user._id})
         if(tokenAvailabe){ await tokenAvailabe.deleteOne()}
         let token = await crypto.randomBytes(32).toString("hex") + user._id
+        console.log(token);
         
         const hashedToken = await crypto.createHash("sha256").update(token).digest("hex")
         await new Token({
@@ -230,4 +230,24 @@ const forgetPassword = asyncHanhler(async(req, res)=>{
         }
 
 })
-module.exports = {registerUser, loginUser, logOut, getUser, statusLogin, updateUser, changedPassword, forgetPassword}
+const resetPassword = asyncHanhler(async(req, res)=>{
+    const {password} = req.body
+    const {resetToken} = req.params
+    
+    const hashedToken = await crypto.createHash("sha256").update(resetToken).digest("hex")
+    const checkInDatabase = await Token.findOne({
+        token:hashedToken,
+        expiredAt:{
+            $gt:Date.now()
+        }
+     }) 
+    if(!checkInDatabase){
+        res.status(400)
+        throw new Error ("Link is not valid")
+    }
+    const user = await User.findOne({_id:checkInDatabase.userid})
+    user.password = password
+    await user.save()
+    res.status(400).json("successfull")
+})
+module.exports = {registerUser, loginUser, logOut, getUser, statusLogin, updateUser, changedPassword, forgetPassword, resetPassword}
