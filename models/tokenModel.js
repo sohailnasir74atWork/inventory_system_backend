@@ -4,7 +4,7 @@ const tokenSchema = mongoose.Schema({
     userid: {
         type:mongoose.Schema.Types.ObjectId,
         required: true,
-        ref:user
+        ref:"user"
     },
     token:{
         type: String,
@@ -22,5 +22,5 @@ const tokenSchema = mongoose.Schema({
 
 },
 )
-const token = mongoose.model("token", tokenSchema)
-module.exports = token
+const Token = mongoose.model("token", tokenSchema)
+module.exports = Token

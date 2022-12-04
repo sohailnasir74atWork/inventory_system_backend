@@ -2,9 +2,14 @@ const asyncHanhler = require("express-async-handler");
 // const dotenv = require("dotenv").config()
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto")
 
 const bcrypt = require("bcryptjs");
 const errorHnadler = require("../middleware/errorHandler");
+const { now } = require("mongoose");
+const sendEmail = require("../models/uTILS/sendMail");
+const Token = require("../models/tokenModel");
+
 
 const genToken = (id)=>{
     return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn: "1d"})
@@ -186,6 +191,43 @@ const changedPassword = asyncHanhler(async(req, res)=>{
     }
 })
 const forgetPassword = asyncHanhler(async(req, res)=>{
-    res.json("forgotpassword")
+    const {email} = req.body
+    const user = await User.findOne({email})
+        if(!user){
+        res.status(400)
+        throw new Error ("User does not exists")  
+        }
+        let tokenAvailabe = await Token.findOne({userid:user._id})
+        if(tokenAvailabe){ await tokenAvailabe.deleteOne()}
+        let token = await crypto.randomBytes(32).toString("hex") + user._id
+        
+        const hashedToken = await crypto.createHash("sha256").update(token).digest("hex")
+        await new Token({
+            userid: user._id,
+            token: hashedToken,
+            createdAt: Date.now(),
+            expiredAt: Date.now() + 30 * 60 * 1000
+        }).save()
+        const resetUrl = `${process.env.FRONTEND_URL}/resetpassword/${token}`
+        const message = `
+        <h2>Hello ${user.name}</h2>
+        <p> This is your reset url, it will expires in 30 Miutes</p>
+        <a href=${resetUrl} clicktracking=off>${resetUrl}</a>`
+        const subject = "Password Reset Email"
+        const send_to = user.email
+        const send_from = process.env.EMAIL_USER
+        try{
+            sendEmail(subject, message, send_to, send_from)
+            res.status(200).json({
+                success:true,
+                message: "yo! email sent seccessfully"
+            })
+
+        } catch(error){
+            res.status(500)
+            throw new Error ("Please try again!")
+
+        }
+
 })
 module.exports = {registerUser, loginUser, logOut, getUser, statusLogin, updateUser, changedPassword, forgetPassword}
