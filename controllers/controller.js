@@ -6,7 +6,7 @@ const crypto = require("crypto")
 
 const bcrypt = require("bcryptjs");
 const errorHnadler = require("../middleware/errorHandler");
-const sendEmail = require("../models/uTILS/sendMail");
+const sendEmail = require("../uTILS/sendMail");
 const Token = require("../models/tokenModel");
 
 
