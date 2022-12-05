@@ -98,7 +98,8 @@ const loginUser = asyncHanhler(async (req, res)=>{
             bio,
             photo,
             phone,
-            token
+            token,
+            
 
         })
     }

@@ -1,5 +1,6 @@
 const express = require("express")
-const {registerUser, loginUser, logOut, getUser, statusLogin, updateUser, changedPassword,forgetPassword, resetPassword, createProduct} = require("../controllers/controller")
+const {registerUser, loginUser, logOut, getUser, statusLogin, updateUser, changedPassword,forgetPassword, resetPassword,} = require("../controllers/userController")
+
 const protect = require("../middleware/authenticationMiddleware")
 const router = express.Router()
 
@@ -12,7 +13,7 @@ router.patch("/updateduser",protect, updateUser)
 router.patch("/changepassword",protect, changedPassword)
 router.post("/forgetpassword", forgetPassword)
 router.put("/resetpassword/:resetToken", resetPassword)
-router.post("/createproduct", createProduct)
+
 
 
 
