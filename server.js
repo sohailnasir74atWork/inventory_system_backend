@@ -8,6 +8,7 @@ const productRoute = require("./routes/productsRouts")
 const errorHnadler = require("./middleware/errorHandler")
 const cookieParser = require("cookie-parser")
 const path = require("path")
+const contectRoute = require("./routes/contectRoute")
 // const multer = require("multer")
 //////////////////////////////////////////EXPRESS RUNNING////////////////////////////////////////////
 const app = express()
@@ -24,6 +25,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")))
 /////////////////////////////////////Middle Router//////////////////////////////////////////////
 app.use("/api/users", userRoute)
 app.use("/api/products", productRoute)
+app.use("/api/contect", contectRoute)
 ///////////////////////////////////////////////SERVER CONNECTION////////////////////////////////
 app.use(errorHnadler)
 app.get("/", (req, res)=>{
