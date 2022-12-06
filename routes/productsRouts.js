@@ -1,7 +1,11 @@
 const express = require("express")
-const createProduct = require("../controllers/productController")
+const {createProduct, getProducts, getSingleProduct, deleteSingleProduct, updateProduct} = require("../controllers/productController")
 const protect = require("../middleware/authenticationMiddleware")
 const {upload} = require("../uTILS/uploadFiles")
 const router = express.Router()
 router.post("/createproduct", protect, upload.single("image"), createProduct)
+router.get("/getproducts", protect, getProducts)
+router.get("/:id", protect, getSingleProduct)
+router.delete("/:id", protect, deleteSingleProduct)
+router.patch("/:id", protect, updateProduct)
 module.exports = router
