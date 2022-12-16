@@ -137,10 +137,10 @@ const logOut = asyncHanhler(async(req, res)=>{
     })
 const statusLogin = asyncHanhler(async(req, res)=>{
         const token = req.cookies.token
-        if(!token){res.json(false)}
+        if(!token){ return res.json(false)}
         const verify = jwt.verify(token, process.env.JWT_SECRET)
-        if(!token){res.json(false)}
-        if(verify) res.json(true)
+        if(!verify){return res.json(false)}
+        if(verify) return res.json(true)
 })
 const updateUser = asyncHanhler(async(req, res)=>{
     const user = await User.findById(req.user._id)
@@ -209,7 +209,7 @@ const forgetPassword = asyncHanhler(async(req, res)=>{
             createdAt: Date.now(),
             expiredAt: Date.now() + 30 * 60 * 1000
         }).save()
-        const resetUrl = `${process.env.FRONTEND_URL}/resetpassword/${token}`
+        const resetUrl = `${process.env.FRONTEND_URL}/restpasword/${token}`
         const message = `
         <h2>Hello ${user.name}</h2>
         <p> This is your reset url, it will expires in 30 Miutes</p>
