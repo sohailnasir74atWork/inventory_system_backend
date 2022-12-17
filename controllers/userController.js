@@ -46,7 +46,7 @@ const registerUser= asyncHanhler( async (req, res)=>{
         httpOnly: true,
         expires: new Date(Date.now() + 1000 * 86400), // 1 day
         sameSite: "none",
-        // secure: true,
+        secure: true,
       });
       
     //////////////////////////////////////////////////////////
@@ -73,12 +73,14 @@ const loginUser = asyncHanhler(async (req, res)=>{
     }
     const token = genToken(user._id)
     /////////////////////////send http cookies/////////////////
+    
+    console.log(token);
     res.cookie("token", token, {
         path: "/",
         httpOnly: true,
-        expires: new Date(Date.now() + 1000 * 86400), // 1 day
+        expires: new Date(Date.now() + (1000 * 86400)), // 1 day
         sameSite: "none",
-        // secure: true,
+        secure: true,
       });
       
 
@@ -138,7 +140,7 @@ const logOut = asyncHanhler(async(req, res)=>{
 const statusLogin = asyncHanhler(async(req, res)=>{
         const token = req.cookies.token
         if(!token){ return res.json(false)}
-        const verify = jwt.verify(token, process.env.JWT_SECRET)
+        const verify = await jwt.verify(token, process.env.JWT_SECRET)
         if(!verify){return res.json(false)}
         if(verify) return res.json(true)
 })
@@ -209,7 +211,7 @@ const forgetPassword = asyncHanhler(async(req, res)=>{
             createdAt: Date.now(),
             expiredAt: Date.now() + 30 * 60 * 1000
         }).save()
-        const resetUrl = `${process.env.FRONTEND_URL}/restpasword/${token}`
+        const resetUrl = `${process.env.FRONTEND_URL}/resetpassword/${token}`
         const message = `
         <h2>Hello ${user.name}</h2>
         <p> This is your reset url, it will expires in 30 Miutes</p>
@@ -249,6 +251,6 @@ const resetPassword = asyncHanhler(async(req, res)=>{
     const user = await User.findOne({_id:checkInDatabase.userid})
     user.password = password
     await user.save()
-    res.status(400).json("successfull")
+    res.status(200).json("successfull")
 })
 module.exports = {registerUser, loginUser, logOut, getUser, statusLogin, updateUser, changedPassword, forgetPassword, resetPassword}
