@@ -44,7 +44,7 @@ const registerUser= asyncHanhler( async (req, res)=>{
     res.cookie("token", token, {
         path: "/",
         httpOnly: true,
-        expires: new Date(Date.now() + 1000 * 86400), // 1 day
+        expires: new Date(new Date().getTime() + 86400000), // 1 day
         sameSite: "none",
         secure: true,
       });
@@ -71,19 +71,7 @@ const loginUser = asyncHanhler(async (req, res)=>{
         res.status(400)
         throw new Error ("User Does not exist")
     }
-    const token = genToken(user._id)
-    /////////////////////////send http cookies/////////////////
     
-    console.log(token);
-    res.cookie("token", token, {
-        path: "/",
-        httpOnly: true,
-        expires: new Date(Date.now() + (1000 * 86400)), // 1 day
-        sameSite: "none",
-        secure: true,
-      });
-      
-
     
     const isvalidPassword = await bcrypt.compare(password, user.password)
     if(!isvalidPassword){
@@ -92,8 +80,22 @@ const loginUser = asyncHanhler(async (req, res)=>{
 
     }
     if(user && isvalidPassword){
+        console.log(user._id);
+    const token = genToken(user._id)
+    /////////////////////////send http cookies/////////////////
+    
+    
+    res.cookie("token", token, {
+        path: "/",
+        httpOnly: true,
+        expires: new Date(new Date().getTime() + 86400000), // 1 day
+        sameSite: "none",
+        secure: true,
+      });
+      
+
         const {_id, name, email,bio, phone, photo,} = user
-        res.status(200).json({
+        res.status(201).json({
             _id,
             name,
             email,
@@ -202,7 +204,6 @@ const forgetPassword = asyncHanhler(async(req, res)=>{
         let tokenAvailabe = await Token.findOne({userid:user._id})
         if(tokenAvailabe){ await tokenAvailabe.deleteOne()}
         let token = await crypto.randomBytes(32).toString("hex") + user._id
-        console.log(token);
         
         const hashedToken = await crypto.createHash("sha256").update(token).digest("hex")
         await new Token({
