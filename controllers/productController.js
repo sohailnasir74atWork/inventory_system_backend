@@ -5,8 +5,8 @@ const { options } = require("../routes/userRoute")
 const cloudinary = require("cloudinary").v2
 
 const createProduct = asyncHandler(async(req, res)=>{
-    const {name, quantity, price, description, sku, catagory} = req.body
-    if (!name || !quantity || !price || !description || !catagory){
+    const {name, quantity, price, description, sku, category} = req.body
+    if (!name || !quantity || !price || !description || !category){
         res.status(400)
         throw new Error ("Name, Quantity, Price, Description & Catagory fields are mandatory, please make saure to insert all of these")
     }
@@ -40,7 +40,7 @@ const createProduct = asyncHandler(async(req, res)=>{
             price, 
             description, 
             sku, 
-            catagory,
+            category,
             image: fileData
         }
     )
@@ -111,7 +111,7 @@ const deleteSingleProduct = asyncHandler(async(req, res)=>{
 //         }}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const updateProduct = asyncHandler(async(req, res)=>{
-    const {name, quantity, price, description, sku, catagory} = req.body
+    const {name, quantity, price, description, sku, category} = req.body
     const { id } =  req.params
     ////////////////////////geting upload file
     let fileData = {}
@@ -146,7 +146,7 @@ const updateProduct = asyncHandler(async(req, res)=>{
             price, 
             description, 
             sku, 
-            catagory,
+            category,
             image: Object.keys(fileData).length === 0 ? product?.image : fileData, 
         }
     )
